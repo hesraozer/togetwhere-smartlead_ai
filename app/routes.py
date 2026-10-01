@@ -29,20 +29,21 @@ def sohbet():
     veri = request.get_json(silent=True) or {}
 
     mesaj = veri.get('mesaj', '').strip()
-    gecmis = veri.get('gecmis', []) 
+    gecmis = veri.get('gecmis', [])
+
     if not mesaj:
-        return jsonify({'hata': 'Mesaj bos olamaz.'}), 400
+        return jsonify({'basari': False, 'hata': 'Mesaj bos olamaz.'}), 400
+
     try:
         cevap = ai_service.yanit_uret(mesaj, gecmis)
-
-        return jsonify({
-            'cevap': cevap
-        })
+        return jsonify({'basari': True, 'cevap': cevap})
 
     except AIServiceError:
         return jsonify({
+            'basari': False,
             'hata': 'Yapay zeka servisine su anda ulasilamiyor.'
         }), 503
+
 
 @api_bp.route('/leads', methods=['POST'])
 def yeni_lead():
@@ -55,6 +56,7 @@ def yeni_lead():
 
     if not isim or not telefon:
         return jsonify({
+            'basari': False,
             'hata': 'Isim ve telefon alanlari zorunludur.'
         }), 400
 
