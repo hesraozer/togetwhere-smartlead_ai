@@ -24,11 +24,15 @@ def create_app():
         }
     )
 
+    init_db(app)
+
     from app.routes import pages_bp, api_bp
 
     app.register_blueprint(pages_bp)
     app.register_blueprint(api_bp, url_prefix='/api')
 
-    init_db(app)
+    @app.route('/health')
+    def health():
+        return {'durum': 'aktif'}, 200
 
     return app
